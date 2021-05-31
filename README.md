@@ -1,7 +1,7 @@
 # PySanger Installation and User Manual
-Sanger sequencing is an important method to validate nucleotide sequences in synthetic DNA parts.  In current biology, confirming over a few dozen Sanger sequencing results is a general task. However, there is no software to check a large number of Sanger sequencing results with script-based tools. As a result, biologists consume their time to check the results with point-and-click on the screen.  
+Sanger sequencing is an important method to validate nucleotide sequences in synthetic DNA parts.  In current biology, checking over a few dozen Sanger sequencing results is a general task. However, there is no software to analyze a large number of Sanger sequencing results with script-based tools. As a result, biologists consume their time to check the results with point-and-click on the screen.  
 BioPython provides a parser to interpret Sanger sequencing results (abi format file). However, the usage explanation is insufficient; it is too difficult to understand how to use the parser.  
-Here, I provide a Python module to interpret the Sanger sequencing result. With a simple python script, users can easily extract the expected sequence detected by Sanger sequencing or map the observed signal intensities on the expected ideal sequences. You no longer need to use GUI-based software such as Ape, SnapGene, and Benchling for checking Sanger sequencing results.  
+Here, I developed a Python module to interpret the Sanger sequencing result. With a simple python script, users can easily extract the expected sequence detected by Sanger sequencing or map the observed signal intensities on the expected ideal sequences. You no longer need to use GUI-based software such as Ape, SnapGene, and Benchling for checking Sanger sequencing results.  
 
 ## Software dependency
 - python 3.8.0 or later
