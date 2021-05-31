@@ -97,7 +97,7 @@ fig        = visualize(abidata, template="AGCCGGCTGGCTGCAGGCGT", region="aligned
 fig.savefig("test.pdf", bbox_inches="tight") 
 ```
 
-![test.pdf](test.pdf)
+![test.pdf](test.png)
 
 ## Example usage 2
 Create motif logo from a Sanger sequencing reuslt. (To execute the example, [logomaker](https://logomaker.readthedocs.io/en/latest/) module is required) 
