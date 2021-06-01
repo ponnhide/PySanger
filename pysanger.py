@@ -24,41 +24,58 @@ def abi_to_dict(filename):
                            "T":[],
                            "G":[],
                            "C":[],
+                          },
+                "_channel":{"A":[],
+                            "T":[],
+                            "G":[],
+                            "C":[],
                           }
-               }
+                }
     for i, (pos, conf) in enumerate(zip(record.annotations['abif_raw']["PLOC1"], record.annotations['abif_raw']["PCON1"])):
-        if pos > 3 and pos < len(record.annotations['abif_raw']["DATA9"])-4: 
+        if pos > 4 and pos < len(record.annotations['abif_raw']["DATA9"])-5: 
             abi_data["conf"].append(conf)
-            
-            abi_data["channel"]["G"].append(record.annotations['abif_raw']["DATA9"][pos-4])
             abi_data["channel"]["G"].append(record.annotations['abif_raw']["DATA9"][pos])
-            abi_data["channel"]["G"].append(record.annotations['abif_raw']["DATA9"][pos+4])
-            
-            abi_data["channel"]["A"].append(record.annotations['abif_raw']["DATA10"][pos-4])
             abi_data["channel"]["A"].append(record.annotations['abif_raw']["DATA10"][pos])
-            abi_data["channel"]["A"].append(record.annotations['abif_raw']["DATA10"][pos+4])
-            
-            abi_data["channel"]["T"].append(record.annotations['abif_raw']["DATA11"][pos-4])
             abi_data["channel"]["T"].append(record.annotations['abif_raw']["DATA11"][pos])
-            abi_data["channel"]["T"].append(record.annotations['abif_raw']["DATA11"][pos+4])
+            abi_data["channel"]["C"].append(record.annotations['abif_raw']["DATA12"][pos])
 
-            abi_data["channel"]["C"].append(record.annotations['abif_raw']["DATA12"][pos-4])
-            abi_data["channel"]["C"].append(record.annotations['abif_raw']["DATA12"][pos]) 
-            abi_data["channel"]["C"].append(record.annotations['abif_raw']["DATA12"][pos+4])
+            abi_data["_channel"]["G"].append(record.annotations['abif_raw']["DATA9"][pos-5])
+            abi_data["_channel"]["G"].append(record.annotations['abif_raw']["DATA9"][pos-3])
+            abi_data["_channel"]["G"].append(record.annotations['abif_raw']["DATA9"][pos])
+            abi_data["_channel"]["G"].append(record.annotations['abif_raw']["DATA9"][pos+3])
+            abi_data["_channel"]["G"].append(record.annotations['abif_raw']["DATA9"][pos+5])
+            
+            abi_data["_channel"]["A"].append(record.annotations['abif_raw']["DATA10"][pos-5])
+            abi_data["_channel"]["A"].append(record.annotations['abif_raw']["DATA10"][pos-3])
+            abi_data["_channel"]["A"].append(record.annotations['abif_raw']["DATA10"][pos])
+            abi_data["_channel"]["A"].append(record.annotations['abif_raw']["DATA10"][pos+3])
+            abi_data["_channel"]["A"].append(record.annotations['abif_raw']["DATA10"][pos+5])
+            
+            abi_data["_channel"]["T"].append(record.annotations['abif_raw']["DATA11"][pos-5])
+            abi_data["_channel"]["T"].append(record.annotations['abif_raw']["DATA11"][pos-3])
+            abi_data["_channel"]["T"].append(record.annotations['abif_raw']["DATA11"][pos])
+            abi_data["_channel"]["T"].append(record.annotations['abif_raw']["DATA11"][pos+3])
+            abi_data["_channel"]["T"].append(record.annotations['abif_raw']["DATA11"][pos+5])
+
+            abi_data["_channel"]["C"].append(record.annotations['abif_raw']["DATA12"][pos-5])
+            abi_data["_channel"]["C"].append(record.annotations['abif_raw']["DATA12"][pos-3])
+            abi_data["_channel"]["C"].append(record.annotations['abif_raw']["DATA12"][pos])
+            abi_data["_channel"]["C"].append(record.annotations['abif_raw']["DATA12"][pos+3])
+            abi_data["_channel"]["C"].append(record.annotations['abif_raw']["DATA12"][pos+5])
 
     return abi_data 
 
 def generate_consensusseq(abidata):
     consensus_seq = "" 
     
-    for values in zip(abidata["channel"]["A"][1::3], abidata["channel"]["T"][1::3], abidata["channel"]["G"][1::3], abidata["channel"]["C"][1::3]):
+    for values in zip(abidata["channel"]["A"], abidata["channel"]["T"], abidata["channel"]["G"], abidata["channel"]["C"]):
         consensus_seq += _atgc_dict[values.index(max(values))]
      
     return (consensus_seq, consensus_seq.translate(str.maketrans("ATGC","TACG"))[::-1]) 
 
 def generate_pwm(abidata):
     pwm = {"A":[], "T":[], "G":[], "C":[]} 
-    for values in zip(abidata["channel"]["A"][1::3], abidata["channel"]["T"][1::3], abidata["channel"]["G"][1::3], abidata["channel"]["C"][1::3]):
+    for values in zip(abidata["channel"]["A"], abidata["channel"]["T"], abidata["channel"]["G"], abidata["channel"]["C"]):
         v = 100000 / (sum(values)+1) 
         new_values = (v*values[0], v*values[1], v*values[2], v*values[3])
         new_values = list(map(int, new_values))
@@ -115,10 +132,10 @@ def _colorbar(ax, ref, matches=None, char=True, fontsize=10):
 
 
 def visualize(abidata, template=None, strand=1, fig=None, region="all"):  
-    avalues = abidata["channel"]["A"]
-    tvalues = abidata["channel"]["T"]
-    gvalues = abidata["channel"]["G"]
-    cvalues = abidata["channel"]["C"]
+    avalues = abidata["_channel"]["A"]
+    tvalues = abidata["_channel"]["T"]
+    gvalues = abidata["_channel"]["G"]
+    cvalues = abidata["_channel"]["C"]
     consensus_seq_set = generate_consensusseq(abidata)
     
     if strand == 1: 
@@ -171,26 +188,35 @@ def visualize(abidata, template=None, strand=1, fig=None, region="all"):
         matches = [] 
         for t, s in zip(atemplate, asubject):
             if s == "-":
-                new_avalues.extend([0,0,0]) 
-                new_tvalues.extend([0,0,0]) 
-                new_gvalues.extend([0,0,0]) 
-                new_cvalues.extend([0,0,0]) 
+                new_avalues.extend([0,0,0,0,0]) 
+                new_tvalues.extend([0,0,0,0,0]) 
+                new_gvalues.extend([0,0,0,0,0]) 
+                new_cvalues.extend([0,0,0,0,0]) 
             else:
-                new_avalues.append(avalues[3*pos]) 
-                new_avalues.append(avalues[3*pos+1]) 
-                new_avalues.append(avalues[3*pos+2])
+                new_avalues.append(avalues[5*pos]) 
+                new_avalues.append(avalues[5*pos+1]) 
+                new_avalues.append(avalues[5*pos+2])
+                new_avalues.append(avalues[5*pos+3]) 
+                new_avalues.append(avalues[5*pos+4])
 
-                new_tvalues.append(tvalues[3*pos])
-                new_tvalues.append(tvalues[3*pos+1]) 
-                new_tvalues.append(tvalues[3*pos+2])
+                new_tvalues.append(tvalues[5*pos])
+                new_tvalues.append(tvalues[5*pos+1]) 
+                new_tvalues.append(tvalues[5*pos+2])
+                new_tvalues.append(tvalues[5*pos+3]) 
+                new_tvalues.append(tvalues[5*pos+4])
                 
-                new_gvalues.append(gvalues[3*pos])
-                new_gvalues.append(gvalues[3*pos+1]) 
-                new_gvalues.append(gvalues[3*pos+2])
+                new_gvalues.append(gvalues[5*pos])
+                new_gvalues.append(gvalues[5*pos+1]) 
+                new_gvalues.append(gvalues[5*pos+2])
+                new_gvalues.append(gvalues[5*pos+3]) 
+                new_gvalues.append(gvalues[5*pos+4])
 
-                new_cvalues.append(cvalues[3*pos])
-                new_cvalues.append(cvalues[3*pos+1])
-                new_cvalues.append(cvalues[3*pos+2])
+                new_cvalues.append(cvalues[5*pos])
+                new_cvalues.append(cvalues[5*pos+1])
+                new_cvalues.append(cvalues[5*pos+2])
+                new_cvalues.append(cvalues[5*pos+3]) 
+                new_cvalues.append(cvalues[5*pos+4])
+
                 pos += 1
             
             if t == s: 
@@ -237,12 +263,16 @@ def visualize(abidata, template=None, strand=1, fig=None, region="all"):
     ax.set_xlim(0,len(asubject))
     
     ax2 = ax.twinx()
-    positions = list(map(lambda x: (x+0.5)/3, list(range(len(tvalues[3*ss:3*se])))))
-    ax2.plot(positions, tvalues[3*ss:3*se], color="#FC58FE", lw=1, zorder=1)  
-    ax2.plot(positions, avalues[3*ss:3*se], color="#33CC33", lw=1, zorder=1) 
-    ax2.plot(positions, gvalues[3*ss:3*se], color="#303030", lw=1, zorder=1)
-    ax2.plot(positions, cvalues[3*ss:3*se], color="#395CC5", lw=1, zorder=1) 
-    ax2.set_ylim(min(list(tvalues[3*ss:3*se]) + list(avalues[3*ss:3*se]) + list(gvalues[3*ss:3*se]) + list(cvalues[3*ss:3*se])), 1.01*max(list(tvalues[3*ss:3*se]) + list(avalues[3*ss:3*se]) + list(gvalues[3*ss:3*se]) + list(cvalues[3*ss:3*se])))
+    if se is None:
+        _se = None
+    else:
+        _se = 5*se
+    positions = list(map(lambda x: (x+0.5)/5, list(range(len(tvalues[5*ss:_se])))))
+    ax2.plot(positions, tvalues[5*ss:_se], color="#FC58FE", lw=1, zorder=1)  
+    ax2.plot(positions, avalues[5*ss:_se], color="#33CC33", lw=1, zorder=1) 
+    ax2.plot(positions, gvalues[5*ss:_se], color="#303030", lw=1, zorder=1)
+    ax2.plot(positions, cvalues[5*ss:_se], color="#395CC5", lw=1, zorder=1) 
+    ax2.set_ylim(min(list(tvalues[5*ss:_se]) + list(avalues[5*ss:_se]) + list(gvalues[5*ss:_se]) + list(cvalues[5*ss:_se])), 1.01*max(list(tvalues[5*ss:_se]) + list(avalues[5*ss:_se]) + list(gvalues[5*ss:_se]) + list(cvalues[5*ss:_se])))
     #ax2.set_xlim(0,3*len(asubject))
 
     ax.set_ylabel("Quality")
@@ -325,7 +355,11 @@ if __name__ == "__main__":
     fseq, rseq = generate_consensusseq(abidata)  
     fig = visualize(abidata, template="AGCCGGCTGGCTGCAGGCGT", region="aligned") 
     fig.savefig("test.pdf", bbox_inches="tight") 
-   
+    
+    abidata = abi_to_dict(sys.argv[1])  
+    fseq, rseq = generate_consensusseq(abidata)  
+    fig = visualize(abidata, template="AGCCGGCTGGCTGCAGGCGT", region="all") 
+    fig.savefig("test2.pdf", bbox_inches="tight") 
 
     pwm = generate_pwm(abidata) 
     fseq, rseq = generate_consensusseq(abidata) 
