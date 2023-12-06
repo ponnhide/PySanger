@@ -7,8 +7,7 @@ Here, I developed a Python module to interpret the Sanger sequencing result. Wit
 - python 3.8.0 or later
 
 ## Installation
-1.  Download the software by  ````git clone https://github.com/yachielab/dna.py ````
-2.  Install the following Python packages by  
+1.  Install the following Python packages by  
 	
 	```
 	pip install matplotlib
@@ -18,7 +17,7 @@ Here, I developed a Python module to interpret the Sanger sequencing result. Wit
 	pip install logomaker (optional) 
 	```
 
-3.  Set PYTHONPATH to the directory where you cloned the repository.
+2.  Set PYTHONPATH to the directory where you cloned the repository.
 
 ## API
 - **abi_to_dict**_`(filename=str)`_  
